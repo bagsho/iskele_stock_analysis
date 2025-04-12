@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+## Libraries
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+```
+
+## Data Import
+
+```{r}
+
+satis <- 
+  read_excel("data/satis.xls") |> 
+  set_names(c("year_month", "product_name", "quantity", "net_amount"))
+
+stok <- read_excel("data/stok.xls")
+
+```
+
+## First Trials for joining
+
+```{r}
+stok_selected <- 
+  stok |> 
+    select(4,5) |> 
+    set_names(c("product_name","stock_quantity"))
+
+
+```
+
+```{r}
+satis_wider<-
+  satis |> 
+    pivot_wider(
+              names_from = year_month,
+              values_from = c(quantity,net_amount))
+```
