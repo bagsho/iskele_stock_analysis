@@ -7,6 +7,8 @@ editor: visual
 ## Libraries
 
 ```{r}
+#| message: false
+#| warning: false
 library(readxl)
 library(tidyverse)
 
@@ -36,9 +38,23 @@ stok_selected <-
 ```
 
 ```{r}
-satis_wider<-
+
+duration <-yday(today())-1
+
+monthly_sales <-
   satis |> 
     pivot_wider(
-              names_from = year_month,
-              values_from = c(quantity,net_amount))
+      names_from = year_month,
+      values_from = c(quantity,net_amount)
+    ) |> 
+    mutate(
+      quantity = rowSums(across(c(2, 3, 4, 5)), na.rm = TRUE)/duration*30,
+      amount = rowSums(across(c(6, 7, 8, 9)), na.rm = TRUE)/duration*30
+    ) |> 
+    select(product_name,quantity,amount) |> 
+    filter(!is.na(product_name)) |> 
+    mutate(
+      quantity=ceiling(quantity),
+      amount=ceiling(amount)
+    )
 ```
