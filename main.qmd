@@ -97,6 +97,24 @@ excess_stock <- combined_data |>
 
 ## Data Analysis
 
-```{r}
+Toplam Stok Fazlasının Maliyeti
 
+```{r}
+tot_excess_st_cost <- 
+  excess_stock |> 
+    filter(excess_stock_cost>0) |> 
+    summarise(tot_excess_st_cost=sum(excess_stock_cost)) |> 
+    pull(tot_excess_st_cost)
+
+tot_excess_st_cost
+```
+
+Stok Fazlası Maliyeti En Yüksek 10 Ürün
+
+```{r}
+excess_stock |> 
+  filter(excess_stock_cost>0) |> 
+  arrange(-excess_stock_cost) |> 
+  head(10) |> 
+  mutate(ratio=excess_stock_cost/tot_excess_st_cost) |> view()
 ```
