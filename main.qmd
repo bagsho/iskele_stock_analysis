@@ -37,8 +37,8 @@ simplified stock data
 ```{r}
 stock_short <- 
   stock |> 
-    select(4,5) |> 
-    set_names(c("product_name","stock_quantity"))
+    select(4,5,15) |> 
+    set_names(c("product_name","stock_quantity","unit_cost"))
 
 
 ```
@@ -73,7 +73,7 @@ joining sales data to stock data
 
 combined_data <- stock_short  |> 
   left_join(monthly_sales, by = "product_name") |> 
-  set_names(c("product","stock_quantity","sold_quantity","sold_amount"))
+  set_names(c("product","stock_quantity","unit_cost","sold_quantity","sold_amount"))
 
 ```
 
@@ -89,7 +89,6 @@ burada aşağıdaki mantıkla bir data oluşturuldu.
 excess_stock <- combined_data |> 
   mutate(
     inventory_days = stock_quantity/sold_quantity*30,
-    unit_cost=sold_amount/sold_quantity,
     excess_stock =stock_quantity-2*sold_quantity,
     excess_stock_cost=excess_stock*unit_cost
   )
