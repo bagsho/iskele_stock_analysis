@@ -1,6 +1,8 @@
 ---
 title: "Untitled"
-format: html
+format: 
+  html: 
+    df-print: kable
 editor: visual
 ---
 
@@ -115,5 +117,50 @@ excess_stock |>
   filter(excess_stock_cost>0) |> 
   arrange(-excess_stock_cost) |> 
   head(10) |> 
-  mutate(ratio=excess_stock_cost/tot_excess_st_cost) |> view()
+  mutate(ratio=excess_stock_cost/tot_excess_st_cost)
 ```
+
+Bu yıl hiç satılmamış ama stokta fazla olan ürünler
+
+```{r}
+unsold_products  <- 
+  excess_stock |> 
+    filter(is.na(sold_quantity)) |> 
+        select(1:3) |> 
+    mutate(excess_stock_cost=stock_quantity*unit_cost)
+
+unsold_products |> head()
+```
+
+Satılmayan Ürünlerin Toplam Stok Fazlasının Maliyeti
+
+```{r}
+unsold_products_tot_excess_st_cost <- 
+  unsold_products |> 
+    filter(!is.na(unit_cost)) |> 
+    summarise(tot_excess_st_cost=sum(excess_stock_cost)) |> 
+    pull(tot_excess_st_cost)
+
+unsold_products_tot_excess_st_cost
+```
+kategori ekle
+```{r}
+unsold_products_with_category <- 
+  unsold_products |> 
+  left_join(stock, by = c("product"="UrunAd")) |> 
+  select(1,2,3,4,6) 
+
+```
+
+
+analiz
+```{r}
+unsold_products_with_category|> 
+  arrange(-excess_stock_cost) |> 
+  head(10) |> 
+  mutate(ratio=excess_stock_cost/tot_excess_st_cost)
+  
+  
+  mutate() |> view()
+```
+
