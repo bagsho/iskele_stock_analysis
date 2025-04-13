@@ -18,31 +18,39 @@ library(tidyverse)
 
 ```{r}
 
-satis <- 
+sales <- 
   read_excel("data/satis.xls") |> 
   set_names(c("year_month", "product_name", "quantity", "net_amount"))
 
-stok <- read_excel("data/stok.xls")
+stock <- 
+  read_excel("data/stok.xls") |> 
+  set_names(
+    c("Barkod","UrunGrup","UrunAltGrup","UrunAd","Stok","Marka","Firma","KDV","PSF","ToplamPSF","DF","ToplamDF","Maliyet_KDVsiz","TopMaliyet_KDVsiz","Maliyet_KDVli","TopMaliyet_KDVli")
+  )
 
 ```
 
 ## First Trials for joining
 
+simplified stock data
+
 ```{r}
-stok_selected <- 
-  stok |> 
+stock_short <- 
+  stock |> 
     select(4,5) |> 
     set_names(c("product_name","stock_quantity"))
 
 
 ```
 
+monthly_sales
+
 ```{r}
 
 duration <-yday(today())-1
 
 monthly_sales <-
-  satis |> 
+  sales |> 
     pivot_wider(
       names_from = year_month,
       values_from = c(quantity,net_amount)
@@ -57,4 +65,38 @@ monthly_sales <-
       quantity=ceiling(quantity),
       amount=ceiling(amount)
     )
+```
+
+joining sales data to stock data
+
+```{r}
+
+combined_data <- stock_short  |> 
+  left_join(monthly_sales, by = "product_name") |> 
+  set_names(c("product","stock_quantity","sold_quantity","sold_amount"))
+
+```
+
+## data wrangling
+
+burada aşağıdaki mantıkla bir data oluşturuldu.
+
+1.  maliyet satış fiyatının %70'idir.
+2.  iki aylık ihtiyaçtan daha fazla stoklar fazla stok olarak ele alınır.
+3.  fazla stoğun maliyeti hesaplandı.
+
+```{r}
+excess_stock <- combined_data |> 
+  mutate(
+    inventory_days = stock_quantity/sold_quantity*30,
+    unit_cost=sold_amount/sold_quantity,
+    excess_stock =stock_quantity-2*sold_quantity,
+    excess_stock_cost=excess_stock*unit_cost
+  )
+```
+
+## Data Analysis
+
+```{r}
+
 ```
