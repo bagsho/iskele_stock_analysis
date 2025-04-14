@@ -19,6 +19,8 @@ library(tidyverse)
 ## Data Import
 
 ```{r}
+#| message: false
+#| warning: false
 
 stock <- 
   read_excel("data/stok.xls") |> 
@@ -28,10 +30,11 @@ stock <-
 
 ```
 
-analiz
+Stok Durumu
 
 ```{r}
 stock |> 
+  select(Stok,ToplamPSF,TopMaliyet_KDVsiz,TopMaliyet_KDVli) |> 
   filter(Stok!=20450) |> 
   summarise(across(where(is.numeric), sum, na.rm = TRUE))
 ```
