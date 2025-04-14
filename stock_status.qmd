@@ -1,0 +1,37 @@
+---
+title: "current stock status"
+format: 
+  html: 
+    df-print: kable
+editor: visual
+---
+
+## Libraries
+
+```{r}
+#| message: false
+#| warning: false
+library(readxl)
+library(tidyverse)
+
+```
+
+## Data Import
+
+```{r}
+
+stock <- 
+  read_excel("data/stok.xls") |> 
+  set_names(
+    c("Barkod","UrunGrup","UrunAltGrup","UrunAd","Stok","Marka","Firma","KDV","PSF","ToplamPSF","DF","ToplamDF","Maliyet_KDVsiz","TopMaliyet_KDVsiz","Maliyet_KDVli","TopMaliyet_KDVli")
+  )
+
+```
+
+analiz
+
+```{r}
+stock |> 
+  filter(Stok!=20450) |> 
+  summarise(across(where(is.numeric), sum, na.rm = TRUE))
+```
