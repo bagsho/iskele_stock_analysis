@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "İskele Stok Analizi"
 format: 
   html: 
     df-print: kable
@@ -83,9 +83,8 @@ combined_data <- stock_short  |>
 
 burada aşağıdaki mantıkla bir data oluşturuldu.
 
-1.  maliyet satış fiyatının %70'idir.
-2.  iki aylık ihtiyaçtan daha fazla stoklar fazla stok olarak ele alınır.
-3.  fazla stoğun maliyeti hesaplandı.
+1.  iki aylık ihtiyaçtan daha fazla stoklar fazla stok olarak ele alınır.
+2.  fazla stoğun maliyeti hesaplandı.
 
 ```{r}
 excess_stock <- combined_data |> 
@@ -97,6 +96,10 @@ excess_stock <- combined_data |>
 ```
 
 ## Data Analysis
+
+Burada iki ayrı analiz yapılıyor. Birincisi bu yıl içinde satışı olan ancak elimizde iki aydan fazla yetecek kadar olan ürünler. Bunlarda stok fazlası iki aydan sonrası olarak hesaplandı. İkincisi, şaşırtıcı şekilde, bu yıl içinde hiç satışı olmayan ürünlerin stokları. Bunların tamamı stok fazlası olarak hesaplandı.
+
+### Bu yıl içinde satışı olan ürünler
 
 Toplam Stok Fazlasının Maliyeti
 
@@ -120,7 +123,7 @@ excess_stock |>
   mutate(ratio=excess_stock_cost/tot_excess_st_cost)
 ```
 
-Bu yıl hiç satılmamış ama stokta fazla olan ürünler
+### Bu yıl hiç satılmamış ama stokta fazla olan ürünler
 
 ```{r}
 unsold_products  <- 
@@ -143,7 +146,9 @@ unsold_products_tot_excess_st_cost <-
 
 unsold_products_tot_excess_st_cost
 ```
+
 kategori ekle
+
 ```{r}
 unsold_products_with_category <- 
   unsold_products |> 
@@ -152,15 +157,28 @@ unsold_products_with_category <-
 
 ```
 
-
 analiz
+
 ```{r}
 unsold_products_with_category|> 
-  arrange(-excess_stock_cost) |> 
-  head(10) |> 
-  mutate(ratio=excess_stock_cost/tot_excess_st_cost)
-  
-  
-  mutate() |> view()
+  group_by(UrunGrup) |> 
+  summarise(Sum=sum(excess_stock_cost)) |> view()
 ```
 
+Dermokozmetik ilk 10 ürün
+
+```{r}
+unsold_products_with_category |> 
+  filter(UrunGrup=="DERMOKOZMETİK") |> 
+  arrange(-excess_stock_cost) |> 
+  head(10)
+```
+
+İlaç ilk 10 ürün
+
+```{r}
+unsold_products_with_category |> 
+  filter(UrunGrup=="İLAÇ") |> 
+  arrange(-excess_stock_cost) |> 
+  head(10)
+```
